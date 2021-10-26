@@ -4,8 +4,66 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e43666c9193c6228f2ff3bce2c0cf25d",
+    "content-hash": "58c494e8ebf39ab38e7ea931ab232e6f",
     "packages": [
+        {
+            "name": "akunbeben/laravository",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/akunbeben/laravository.git",
+                "reference": "ce72a8b46722c9de502053feacc69af95160a3cf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/akunbeben/laravository/zipball/ce72a8b46722c9de502053feacc69af95160a3cf",
+                "reference": "ce72a8b46722c9de502053feacc69af95160a3cf",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.3|^8.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.4",
+                "orchestra/testbench": "^6.17",
+                "phpunit/phpunit": "^9"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Akunbeben\\Laravository\\LaravositoryServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Akunbeben\\Laravository\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Benny Rahmat",
+                    "email": "akunbeben@gmail.com"
+                }
+            ],
+            "description": "Simplify Repository Pattern for Laravel.",
+            "support": {
+                "issues": "https://github.com/akunbeben/laravository/issues",
+                "source": "https://github.com/akunbeben/laravository/tree/1.0.3"
+            },
+            "funding": [
+                {
+                    "url": "https://saweria.co/akunbeben",
+                    "type": "custom"
+                }
+            ],
+            "time": "2021-04-30T16:16:20+00:00"
+        },
         {
             "name": "asm89/stack-cors",
             "version": "v2.0.3",
@@ -1057,6 +1115,59 @@
                 }
             ],
             "time": "2021-10-06T17:43:30+00:00"
+        },
+        {
+            "name": "laravel-lang/lang",
+            "version": "8.1.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Laravel-Lang/lang.git",
+                "reference": "54048d1319b211daa8ab73655b698feb09588876"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Laravel-Lang/lang/zipball/54048d1319b211daa8ab73655b698feb09588876",
+                "reference": "54048d1319b211daa8ab73655b698feb09588876",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*"
+            },
+            "require-dev": {
+                "andrey-helldar/pretty-array": "^2.3",
+                "andrey-helldar/support": "^3.4",
+                "php": "^8.0",
+                "phpunit/phpunit": "^9.5",
+                "symfony/var-dumper": "^5.2"
+            },
+            "suggest": {
+                "andrey-helldar/laravel-lang-publisher": "Easy installation and update of translation files for your project",
+                "arcanedev/laravel-lang": "Translations manager and checker for Laravel 5",
+                "overtrue/laravel-lang": "Command to add languages in your project"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Laravel-Lang Team",
+                    "homepage": "https://github.com/Laravel-Lang"
+                }
+            ],
+            "description": "Languages for Laravel",
+            "keywords": [
+                "lang",
+                "languages",
+                "laravel",
+                "lpm"
+            ],
+            "support": {
+                "issues": "https://github.com/Laravel-Lang/lang/issues",
+                "source": "https://github.com/Laravel-Lang/lang"
+            },
+            "time": "2021-04-14T17:41:45+00:00"
         },
         {
             "name": "laravel/fortify",
