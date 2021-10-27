@@ -23,12 +23,17 @@
    php artisan migrate --seed
    ```
 
-5. Make symlink folder.
+5. Generate the application key
+   ```bash
+   php artisan key:generate
+   ```
+
+6. Make symlink folder.
    ```bash
    php artisan storage:link
    ```
 
-6. Aplication ready to run, you can run it from artisan serve
+7. Aplication ready to run, you can run it from artisan serve
    ```bash
    php artisan serve
    ```
