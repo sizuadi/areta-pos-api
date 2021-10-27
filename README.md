@@ -37,9 +37,14 @@
 - Username / Email : admin@admin.com
 - Password : 12345678
 
-## Tools
+## Dependencies
 - **Laravel - 8.x**
-- **Laravel Fortify - 1.8.x**
+- **laravel/fortify - 1.8.x**
+- **akunbeben/laravository - 1.0.3**
+- **intervention/image - 2.7**
+- **laravel-lang/lang 8.0**
+- **orangehill/iseed - 3.0**
+- **yoeunes/toastr - 1.2**
 - **Bootstrap - 4.6**
 - **Sweetalert2 - 11.x**
 - **jQuery - 3.6.x**
