@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,8 +16,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['middleware' => ['auth']], function () {
-    //
+Route::group(['middleware' => ['auth'], 'as' => 'admin.'], function () {
+    Route::resource('categories', CategoryController::class)->except('show');
+
+    Route::get('products/{product}/image-upload', [ProductController::class, 'image'])->name('products.image');
+    Route::resource('products', ProductController::class);
 });
 
 Route::get('/', [HomeController::class, 'index'])->name('home');

@@ -9,12 +9,15 @@
         "akunbeben/laravository": "^1.0",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
+        "intervention/image": "^2.7",
         "laravel-lang/lang": "~8.0",
         "laravel/fortify": "^1.8",
         "laravel/framework": "^8.65",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
-        "realrashid/sweet-alert": "^4.0"
+        "proengsoft/laravel-jsvalidation": "^4.5",
+        "realrashid/sweet-alert": "^4.0",
+        "yoeunes/toastr": "^1.2"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

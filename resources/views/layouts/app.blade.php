@@ -12,6 +12,8 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
 
+    <link rel="shortcut icon" href="{{ asset('favicon.png') }}" type="image/x-icon">
+
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
@@ -20,6 +22,8 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@x.x.x/dist/select2-bootstrap4.min.css">
+    <link href="{{ asset('vendor/summernote/summernote-bs4.css') }}" rel="stylesheet">
+    @toastr_css
 </head>
 <body>
     <div id="app">
@@ -42,8 +46,8 @@
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-left" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">{{ __('Kategori') }}</a>
-                                <a class="dropdown-item" href="#">{{ __('Produk') }}</a>
+                                <a class="dropdown-item" href="{{ route('admin.categories.index') }}">{{ __('Kategori') }}</a>
+                                <a class="dropdown-item" href="{{ route('admin.products.index') }}">{{ __('Produk') }}</a>
                             </div>
                         </li>
                     </ul>
@@ -91,70 +95,16 @@
         </main>
     </div>
 
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script type="text/javascript" src="{{ asset('js/product.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/jsvalidation/js/jsvalidation.js')}}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/summernote/summernote-bs4.js')}}"></script>
+    @toastr_js
+    @toastr_render
     @include('sweetalert::alert')
 
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-    <script>
-        function populateProduct(item) {
-            let productRow = document.querySelector('.product-row');
-            let productColumn = document.createElement('div');
-            let productCard = document.createElement('div');
-            let productImage = document.createElement('img');
-            let productCardBody = document.createElement('div');
-            let productCardTitle = document.createElement('h5');
-            let productCardPrice = document.createElement('h5');
-            let productCardDescription = document.createElement('p');
-            let buttonWrapper = document.createElement('div');
-            let button = document.createElement('button');
-
-            productImage.className = 'card-img-top';
-            productImage.src = "{{ asset('images/paket-advance.png') }}";
-            productColumn.className = 'col-6 col-md-6 col-lg-4 mb-4';
-            productCard.className = 'card';
-            productCardBody.className = 'card-body';
-            productCardTitle.className = 'card-title text-center';
-            productCardTitle.innerHTML = item.name;
-            productCardPrice.className = 'card-title text-center';
-            productCardPrice.innerHTML = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(item.price);
-            productCardDescription.className = 'card-text';
-            productCardDescription.innerHTML = item.description;
-            buttonWrapper.className = 'text-center';
-            button.className = 'btn btn-primary';
-            button.innerHTML = 'Beli';
-
-            productCard.appendChild(productImage);
-            productCard.appendChild(productCardBody);
-            productCardBody.appendChild(productCardTitle);
-            productCardBody.appendChild(productCardPrice);
-            productCardBody.appendChild(productCardDescription);
-            buttonWrapper.appendChild(button);
-            productCardBody.appendChild(buttonWrapper);
-            productColumn.appendChild(productCard);
-            productRow.appendChild(productColumn);
-        }
-
-        function productsEmpty() {
-            let productRow = document.querySelector('.product-row');
-            productRow.innerHTML = null;
-
-            let productColumn = document.createElement('div');
-            let productCard = document.createElement('div');
-            let productCardBody = document.createElement('div');
-            let productCardTitle = document.createElement('h5');
-
-            productCard.className = 'card';
-            productCardBody.className = 'card-body';
-            productColumn.className = 'col-12';
-            productCardTitle.className = 'card-title text-center';
-            productCardTitle.innerHTML = 'Produk tidak ditemukan';
-
-            productCard.appendChild(productCardBody);
-            productCardBody.appendChild(productCardTitle);
-            productColumn.appendChild(productCard);
-            productRow.appendChild(productColumn);
-        }
-    </script>
+    @include('partials.scripts')
 
     @yield('scripts')
 </body>

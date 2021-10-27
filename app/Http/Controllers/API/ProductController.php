@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Common\GenericMessage;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Repositories\Interfaces\ProductRepositoryInterface;
@@ -24,74 +25,34 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $products = $this->productsRepository->paginate(6, ['category'], $request->name);
+        $products = $this->productsRepository->paginate(6, ['category', 'image'], $request->name);
+        $pagination = $products->links('pagination::api');
 
-        return response()->json($products, 200);
+        return response()->json([
+            'products' => $products,
+            'pagination' => $pagination->render()
+        ], 200);
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Upload product image.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Product $product)
-    {
-        return response()->json($product, 200);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Product $product)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Product $product)
     {
-        //
-    }
+        $fileRequest = $request->file('image');
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Product $product)
-    {
-        //
+        try {
+            $this->productsRepository->upload($product, $fileRequest);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => GenericMessage::ERROR_MESSAGE,
+                'error' => $th->getMessage(),
+            ], 500);
+        }
+
+        return response()->json(['message' => 'Upload gambar produk berhasil.'], 200);
     }
 }

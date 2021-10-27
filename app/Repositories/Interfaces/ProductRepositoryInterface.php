@@ -3,6 +3,7 @@
 namespace App\Repositories\Interfaces;
 
 use Akunbeben\Laravository\Repositories\Interfaces\BaseRepositoryInterface;
+use App\Models\Product;
 
 interface ProductRepositoryInterface extends BaseRepositoryInterface
 {
@@ -16,4 +17,6 @@ interface ProductRepositoryInterface extends BaseRepositoryInterface
      * @return Illuminate\Database\Eloquent\Collection
      */
     public function paginate(int $pageLimit, ?array $relations = null, ?string $searchQuery = null);
+
+    public function upload(Product $product, $imageFile);
 }

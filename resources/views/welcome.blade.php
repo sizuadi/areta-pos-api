@@ -9,25 +9,70 @@
         <div class="col-sm-12 col-md-6 col-lg-4">
             <form method="get" id="form-search" onsubmit="event.preventDefault();">
                 <div class="form-group">
-                    <input type="text" class="form-control @error('search') is-invalid @enderror" id="search" name="search" placeholder="Cari produk" value="{{ request('search') }}">
+                    <input type="text" class="form-control" id="keyword" name="keyword" placeholder="Cari produk" value="{{ request('keyword') }}">
                 </div>
             </form>
         </div>
     </div>
 
     <div class="row product-row"></div>
+
+    <div class="row mt-2">
+        <div class="col-12" id="product-pagination">
+
+        </div>
+    </div>
 </div>
 @endsection
 
 @section('scripts')
 <script>
-    var route = "{{ route('products.index') }}";
-    var searchKeyword = document.querySelector('#search');
+    var route = "{{ route('api.products.index') }}";
+    var searchKeyword = document.querySelector('#keyword');
 
-    let products = () => {
+    var prevPage = null;
+    var nextPage = null;
+    var pageNumber = null;
+
+    let products = (route) => {
         fetch(route).then(response => response.json()).then(response => {
-            if (response.data.length > 0) {
-                response.data.forEach(item => populateProduct(item));
+            if (response.products.data.length > 0) {
+                response.products.data.forEach(item => populateProduct(item));
+                $('#product-pagination').empty().append($(response.pagination));
+
+                prevPage = document.querySelector('#button-prev');
+                nextPage = document.querySelector('#button-next');
+                pageNumber = document.querySelectorAll('.page-number');
+
+                Array.prototype.forEach.call(pageNumber, function (node) {
+                    node.addEventListener('click', function (event) {
+                        let productRow = document.querySelector('.product-row');
+
+                        route = event.target.dataset.page;
+                        productRow.innerHTML = null;
+
+                        products(route);
+                    });
+                });
+
+                prevPage.addEventListener('click', function (event) {
+                    let productRow = document.querySelector('.product-row');
+
+                    route = event.target.dataset.prev;
+                    productRow.innerHTML = null;
+
+                    products(route);
+                });
+
+                nextPage.addEventListener('click', function (event) {
+                    let productRow = document.querySelector('.product-row');
+
+                    route = event.target.dataset.next;
+                    productRow.innerHTML = null;
+
+                    products(route);
+                });
+
                 return;
             }
 
@@ -36,25 +81,22 @@
     }
 
     document.addEventListener("DOMContentLoaded", function (event) {
-        if (searchKeyword.value.length > 0) {
-            route = route + '?name=' + searchKeyword.value;
-        }
-
         let productRow = document.querySelector('.product-row');
         productRow.innerHTML = null;
 
-        products();
+        products(route);
     });
 
     searchKeyword.addEventListener('input', function (event) {
         setTimeout(function() {
             if (searchKeyword.value.length >= 0) {
-                route = "{{ route('products.index', ['name' => ':keyword']) }}".replace('%3Akeyword', searchKeyword.value || '');
+                route = "{{ route('api.products.index', ['name' => 'keyword']) }}".replace('keyword', searchKeyword.value || '');
             }
 
             let productRow = document.querySelector('.product-row');
             productRow.innerHTML = null;
-            products();
+
+            products(route);
         }, 300);
     });
 

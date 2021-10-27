@@ -25,7 +25,7 @@ class ProductFactory extends Factory
         return [
             'name' => $this->faker->streetName(),
             'price' => $this->faker->randomFloat(null, 1000000, 10000000),
-            'description' => $this->faker->realText(100),
+            'description' => $this->faker->realText(70),
             'category_id' => function () {
                 return Category::factory()->create()->id;
             },
