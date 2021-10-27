@@ -50,6 +50,12 @@
 - **jQuery - 3.6.x**
 - **Select2 - 4.0.x**
 
+## DML - Data Manipulation Language
+- **SELECT**
+- **INSERT**
+- **UPDATE**
+- **DELETE**
+
 ## Route list
 
 | Method    | URI                             | Name                     | Action                                                                  
