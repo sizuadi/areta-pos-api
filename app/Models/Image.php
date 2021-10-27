@@ -12,6 +12,15 @@ class Image extends Model
     protected $guarded = [];
 
     /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'path',
+    ];
+
+    /**
      * Get the owning imageable model.
      */
     public function imageable()

@@ -23,12 +23,10 @@ class ProductFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->streetName(),
+            'name' => $this->faker->realTextBetween(10, 20, 2),
             'price' => $this->faker->randomFloat(null, 1000000, 10000000),
             'description' => $this->faker->realText(70),
-            'category_id' => function () {
-                return Category::factory()->create()->id;
-            },
+            'category_id' => fn() => rand(1, 3),
         ];
     }
 }

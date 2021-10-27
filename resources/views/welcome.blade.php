@@ -10,6 +10,7 @@
             <form method="get" id="form-search" onsubmit="event.preventDefault();">
                 <div class="form-group">
                     <input type="text" class="form-control" id="keyword" name="keyword" placeholder="Cari produk" value="{{ request('keyword') }}">
+                    <small class="form-text text-muted">Tekan enter untuk mencari.</small>
                 </div>
             </form>
         </div>
@@ -29,10 +30,18 @@
 <script>
     var route = "{{ route('api.products.index') }}";
     var searchKeyword = document.querySelector('#keyword');
+    var pageNumber, nextPage, prevPage;
 
-    var prevPage = null;
-    var nextPage = null;
-    var pageNumber = null;
+    var searchFn = () => setTimeout(function() {
+        if (searchKeyword.value.length >= 0) {
+            route = "{{ route('api.products.index', ['name' => 'keyword']) }}".replace('keyword', searchKeyword.value || '');
+        }
+
+        let productRow = document.querySelector('.product-row');
+        productRow.innerHTML = null;
+
+        products(route);
+    }, 500);
 
     let products = (route) => {
         fetch(route).then(response => response.json()).then(response => {
@@ -87,18 +96,7 @@
         products(route);
     });
 
-    searchKeyword.addEventListener('input', function (event) {
-        setTimeout(function() {
-            if (searchKeyword.value.length >= 0) {
-                route = "{{ route('api.products.index', ['name' => 'keyword']) }}".replace('keyword', searchKeyword.value || '');
-            }
-
-            let productRow = document.querySelector('.product-row');
-            productRow.innerHTML = null;
-
-            products(route);
-        }, 300);
-    });
+    searchKeyword.addEventListener('change', searchFn);
 
 </script>
 @endsection
