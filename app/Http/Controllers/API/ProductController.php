@@ -25,13 +25,9 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $products = $this->productsRepository->paginate(6, ['category', 'image'], $request->name);
-        $pagination = $products->links('pagination::api');
+        $products = $this->productsRepository->paginate($request->length, ['category', 'image'], $request->search);
 
-        return response()->json([
-            'products' => $products,
-            'pagination' => $pagination->render()
-        ], 200);
+        return response()->json($products, 200);
     }
 
     /**

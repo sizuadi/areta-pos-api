@@ -72,6 +72,32 @@
                             </div>
                         </div>
 
+                        <div class="form-group row">
+                            <label for="image" class="col-sm-2 col-form-label font-weight-normal">Gambar Produk <span class="text-danger">*</span></label>
+                            <div class="col-sm-10">
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input @error('image') is-invalid @enderror" id="image" name="image" accept="image/*">
+                                        <label class="custom-file-label" for="image">Choose file</label>
+                                        @error('image')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted">Gambar produk bawaan akan digunakan jika anda tidak menambahkan gambar.</small>
+                            </div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <div class="offset-2 col-10">
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="offset-2 col-10">
                                 <button class="btn btn-primary" type="submit">Simpan</button>
