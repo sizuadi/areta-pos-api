@@ -13,14 +13,20 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $product = Product::paginate(10);
+        $pageNumber = $request->page ? $request->page : 1 ; // set default
+        $pageLength = $request->length ? $request->length : 5 ; // set default
+
+        $products = Product::when(request('search'), function($q) use ($request) {
+            $q->where('name', 'LIKE', "%$request->search%");
+        })
+        ->paginate($pageLength, ['*'], 'page', $pageNumber);
 
         return response()->json([
             'success' => true,
             'message' => 'product list',
-            'data' => $product
+            'data' => $products
         ], 200);
     }
 
