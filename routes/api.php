@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Category\CategoryController;
 use App\Http\Controllers\Api\Product\ProductController;
+use App\Http\Controllers\Api\Supplier\SupplierController;
 use App\Http\Controllers\Api\User\UserListController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -29,4 +30,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     // Category
     Route::apiResource('category', CategoryController::class);
+
+    // Supplier
+    Route::apiResource('supplier', SupplierController::class);
 });
