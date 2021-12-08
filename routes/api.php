@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Category\CategoryController;
 use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\User\UserListController;
 use Illuminate\Http\Request;
@@ -23,5 +24,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::get('/user', UserListController::class);
 
+    // Product
     Route::apiResource('product', ProductController::class);
+
+    // Category
+    Route::apiResource('category', CategoryController::class);
 });
