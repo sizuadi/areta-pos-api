@@ -177,6 +177,7 @@ return [
 
         // custom add
         App\Providers\FortifyServiceProvider::class,
+        Spatie\Permission\PermissionServiceProvider::class,
 
     ],
 

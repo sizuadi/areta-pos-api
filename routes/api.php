@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\Category\CategoryController;
+use App\Http\Controllers\Api\Product\ProductController;
+use App\Http\Controllers\Api\User\UserListController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +17,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
-    return $request->user();
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/me', function(Request $request) {
+        return $request->user();
+    });
+
+    Route::get('/user', UserListController::class);
+
+    // Product
+    Route::apiResource('product', ProductController::class);
+
+    // Category
+    Route::apiResource('category', CategoryController::class);
 });
