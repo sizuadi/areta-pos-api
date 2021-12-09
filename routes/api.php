@@ -3,6 +3,8 @@
 use App\Http\Controllers\Api\Category\CategoryController;
 use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\Supplier\SupplierController;
+use App\Http\Controllers\Api\Users\RoleController;
+use App\Http\Controllers\Api\Users\UserController;
 use App\Http\Controllers\Api\Users\UserController;
 use App\Http\Controllers\Api\Price\PurchasePriceController;
 use App\Http\Controllers\Api\Price\SellingPriceController;
