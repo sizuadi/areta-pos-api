@@ -5,7 +5,6 @@ use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\Supplier\SupplierController;
 use App\Http\Controllers\Api\Users\RoleController;
 use App\Http\Controllers\Api\Users\UserController;
-use App\Http\Controllers\Api\Users\UserController;
 use App\Http\Controllers\Api\Price\PurchasePriceController;
 use App\Http\Controllers\Api\Price\SellingPriceController;
 use Illuminate\Http\Request;
@@ -44,4 +43,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     // Users
     Route::apiResource('users', UserController::class);
+
+    // Roles
+    Route::apiResource('roles', RoleController::class);
 });
