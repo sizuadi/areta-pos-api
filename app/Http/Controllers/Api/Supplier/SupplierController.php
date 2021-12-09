@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SupplierRequest;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class SupplierController extends Controller
 {
@@ -31,7 +32,7 @@ class SupplierController extends Controller
             'success' => true,
             'message' => 'supplier list',
             'data' => $this->suppliers->paginate($request->length ?? 5)->appends(['search' => $request->search])
-        ], 200);
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -42,13 +43,16 @@ class SupplierController extends Controller
      */
     public function store(SupplierRequest $request)
     {
-        $supplier = Supplier::create($request->validated());
+        try {
+            $this->suppliers->create($request->validated());
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
 
         return response()->json([
             'success' => true,
-            'message' => 'supplier created',
-            'data' => $supplier
-        ], 200);
+            'message' => 'suppliers created'
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -57,13 +61,19 @@ class SupplierController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Supplier $supplier)
+    public function show($id)
     {
+        try {
+            $suppliers = $this->suppliers->findOrFail($id);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
         return response()->json([
             'success' => true,
-            'message' => 'supplier show',
-            'data' => $supplier
-        ], 200);
+            'message' => 'suppliers show',
+            'data' => $suppliers
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -73,15 +83,18 @@ class SupplierController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(SupplierRequest $request, Supplier $supplier)
+    public function update(SupplierRequest $request, $id)
     {
-        $supplier->update($request->validated());
+        try {
+            $this->suppliers->findOrFail($id)->update($request->validated());
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
 
         return response()->json([
             'success' => true,
-            'message' => 'supplier updated',
-            'data' => $supplier
-        ], 200);
+            'message' => 'suppliers updated',
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -90,13 +103,17 @@ class SupplierController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Supplier $supplier)
+    public function destroy($id)
     {
-        $supplier->delete();
+        try {
+            $this->supplier->find($id)->delete();
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
 
         return response()->json([
             'success' => true,
             'message' => 'supplier deleted'
-        ], 200);
+        ], Response::HTTP_OK);
     }
 }
