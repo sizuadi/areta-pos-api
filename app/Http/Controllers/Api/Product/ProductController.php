@@ -45,6 +45,8 @@ class ProductController extends Controller
 
         $product->save();
 
+        $product->category()->attach($request->category);
+
         return response()->json([
             'success' => true,
             'message' => 'product created',
