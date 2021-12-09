@@ -24,11 +24,18 @@ class SupplierRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required_if:status,null|string',
-            'email' => 'required_if:status,null|email|unique:suppliers,email',
-            'phone_number' => 'required_if:status,null|min:10',
+            'name' => 'required_without:status,null|string',
+            'email' => 'required_without:status,null|email|unique:suppliers,email',
+            'phone_number' => 'required_without:status,null|min:10',
             'address' => 'nullable',
             'status' => 'nullable',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'required_without' => "The :attribute field is required",
         ];
     }
 }
