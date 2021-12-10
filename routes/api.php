@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Users\RoleController;
 use App\Http\Controllers\Api\Users\UserController;
 use App\Http\Controllers\Api\Price\PurchasePriceController;
 use App\Http\Controllers\Api\Price\SellingPriceController;
+use App\Http\Controllers\Api\Product\Unit\UnitController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +35,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     // Suppliers
     Route::apiResource('suppliers', SupplierController::class);
+
+    // Units
+    Route::apiResource('units', UnitController::class);
 
     // PurchasePrices
     Route::apiResource('purchase-prices', PurchasePriceController::class);
