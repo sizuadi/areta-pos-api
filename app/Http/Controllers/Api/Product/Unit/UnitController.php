@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Http\Controllers\Api\Price;
+namespace App\Http\Controllers\Api\Product\Unit;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\PurchasePriceRequest;
-use App\Models\PurchasePrice;
+use App\Http\Requests\UnitRequest;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class PurchasePriceController extends Controller
+class UnitController extends Controller
 {
-    protected $purchasePrices;
+    protected $units;
 
-    public function __construct(PurchasePrice $purchasePrices)
+    public function __construct(Unit $units)
     {
-        $this->purchasePrices = $purchasePrices;
+        $this->units = $units;
     }
     
     /**
@@ -25,13 +25,13 @@ class PurchasePriceController extends Controller
     public function index(Request $request)
     {
         if ($request->has('search')) {
-            $this->purchasePrices = $this->purchasePrices->where('name', 'LIKE', '%' . $request->search . '%');
+            $this->units = $this->units->where('name', 'LIKE', '%' . $request->search . '%');
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'purchase price list',
-            'data' => $this->purchasePrices->paginate($request->length ?? 5)->appends(['search' => $request->search])
+            'message' => 'unit list',
+            'data' => $this->units->paginate($request->length ?? 5)->appends(['search' => $request->search])
         ], Response::HTTP_OK);
     }
 
@@ -41,17 +41,17 @@ class PurchasePriceController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(PurchasePriceRequest $request)
+    public function store(UnitRequest $request)
     {
         try {
-            $this->purchasePrices->create($request->validated());
+            $this->units->create($request->validated());
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'purchase price created'
+            'message' => 'units created'
         ], Response::HTTP_OK);
     }
 
@@ -64,16 +64,12 @@ class PurchasePriceController extends Controller
     public function show($id)
     {
         try {
-            $purchasePrices = $this->purchasePrices->findOrFail($id);
+            $unit = $this->units->findOrFail($id);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'purchase price show',
-            'data' => $purchasePrices
-        ], Response::HTTP_OK);
+        return $unit;
     }
 
     /**
@@ -83,17 +79,17 @@ class PurchasePriceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(PurchasePriceRequest $request, $id)
+    public function update(UnitRequest $request, $id)
     {
         try {
-            $this->purchasePrices->findOrFail($id)->update($request->validated());
+            $this->units->findOrFail($id)->update($request->validated());
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'purchase price updated',
+            'message' => 'units updated',
         ], Response::HTTP_OK);
     }
 
@@ -106,14 +102,14 @@ class PurchasePriceController extends Controller
     public function destroy($id)
     {
         try {
-            $this->purchasePrices->find($id)->delete();
+            $this->units->find($id)->delete();
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'purchase price deleted'
+            'message' => 'unit deleted'
         ], Response::HTTP_OK);
     }
 }
