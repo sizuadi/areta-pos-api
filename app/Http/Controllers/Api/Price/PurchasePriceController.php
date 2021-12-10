@@ -106,7 +106,7 @@ class PurchasePriceController extends Controller
     public function destroy($id)
     {
         try {
-            $this->purchasePrice->find($id)->delete();
+            $this->purchasePrices->find($id)->delete();
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

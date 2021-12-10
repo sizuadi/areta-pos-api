@@ -64,16 +64,12 @@ class SupplierController extends Controller
     public function show($id)
     {
         try {
-            $suppliers = $this->suppliers->findOrFail($id);
+            $supplier = $this->suppliers->findOrFail($id);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'suppliers show',
-            'data' => $suppliers
-        ], Response::HTTP_OK);
+        return $supplier;
     }
 
     /**
@@ -106,7 +102,7 @@ class SupplierController extends Controller
     public function destroy($id)
     {
         try {
-            $this->supplier->find($id)->delete();
+            $this->suppliers->find($id)->delete();
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
