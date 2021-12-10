@@ -5,15 +5,21 @@ namespace App\Http\Controllers\Api\Users;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RoleStoreRequest;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
     protected $roles;
+    protected $permissions;
 
-    public function __construct(Role $roles)
-    {
+    public function __construct(
+        Role $roles,
+        Permission $permissions
+    ) {
         $this->roles = $roles;
+        $this->permissions = $permissions;
     }
 
     /**
@@ -42,10 +48,17 @@ class RoleController extends Controller
     public function store(RoleStoreRequest $request)
     {
         try {
-            //code...
+            $role = $this->roles->create($request->validated() + ['guard_name' => 'web']);
         } catch (\Throwable $th) {
-            //throw $th;
+            return response()->json([
+                'message' => $th->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+
+        return response()->json([
+            'message' => 'Data role berhasil ditambahkan',
+            'data' => $role,
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -54,7 +67,7 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Role $role)
     {
         //
     }
@@ -66,7 +79,7 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Role $role)
     {
         //
     }
@@ -77,8 +90,19 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Role $role)
     {
-        //
+        try {
+            $role->delete();
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => $th->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return response()->json([
+            'message' => 'Data pengguna berhasil dihapus.',
+            'status' => true,
+        ], Response::HTTP_OK);
     }
 }

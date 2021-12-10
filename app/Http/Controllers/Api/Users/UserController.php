@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Users;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserStoreRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -24,6 +25,12 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+        if ($request->has('relations')) {
+            $relations = explode(',', $request->relations);
+
+            $this->users = $this->users->with($relations);
+        }
+
         if ($request->has('search')) {
             $this->users = $this->users->where('name', 'LIKE', '%' . $request->search . '%')->orWhere('email', 'LIKE', '%' . $request->search . '%');
         }
@@ -47,7 +54,7 @@ class UserController extends Controller
 
         try {
             $user = $this->users->create($formData);
-            // $user->assignRole($formData['role']);
+            $user->assignRole($formData['role']);
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => $th->getMessage(),
@@ -66,9 +73,15 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show(Request $request, User $user)
     {
-        //
+        if ($request->has('relations')) {
+            $relations = explode(',', $request->relations);
+
+            $user = $user->load($relations);
+        }
+
+        return $user;
     }
 
     /**
@@ -78,9 +91,24 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(UserUpdateRequest $request, User $user)
     {
-        //
+        $formData = $request->validated();
+        $formData['password'] = !$formData['password'] ? bcrypt('12345678') : bcrypt($formData['password']);
+
+        try {
+            $user->update($formData);
+            $user->syncRoles($formData['role']);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => $th->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return response()->json([
+            'message' => 'Data pengguna berhasil diupdate',
+            'data' => $user,
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -91,6 +119,17 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //
+        try {
+            $user->delete();
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => $th->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return response()->json([
+            'message' => 'Data pengguna berhasil dihapus.',
+            'status' => true,
+        ], Response::HTTP_OK);
     }
 }
