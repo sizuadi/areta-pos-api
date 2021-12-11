@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Users;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RoleStoreRequest;
+use App\Http\Requests\RoleUpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Spatie\Permission\Models\Permission;
@@ -29,13 +30,23 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
+        if ($request->has('relations')) {
+            $relations = explode(',', $request->relations);
+
+            $this->roles = $this->roles->with($relations);
+        }
+
         if ($request->has('search')) {
             $this->roles = $this->roles->where('name', 'LIKE', '%' . $request->search . '%');
         }
 
+        $this->roles = !$request->has('no_paginate')
+            ? $this->roles->paginate($request->length ?? self::DEFAULT_PAGE_LENGTH)->appends(['search' => $request->search])
+            : $this->roles->get();
+
         return response()->json([
             'success' => true,
-            'data' => $this->roles->paginate($request->length ?? 5)->appends(['search' => $request->search]),
+            'data' => $this->roles,
         ]);
     }
 
@@ -56,7 +67,7 @@ class RoleController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data role berhasil ditambahkan',
+            'message' => 'Role created successfully.',
             'data' => $role,
         ], Response::HTTP_CREATED);
     }
@@ -67,9 +78,15 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Role $role)
+    public function show(Request $request, Role $role)
     {
-        //
+        if ($request->has('relations')) {
+            $relations = explode(',', $request->relations);
+
+            $role = $role->load($relations);
+        }
+
+        return response()->json($role, Response::HTTP_OK);
     }
 
     /**
@@ -79,9 +96,20 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Role $role)
+    public function update(RoleUpdateRequest $request, Role $role)
     {
-        //
+        try {
+            $role->update($request->validated());
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => $th->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return response()->json([
+            'message' => 'Role updated successfully.',
+            'data' => $role,
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -101,7 +129,7 @@ class RoleController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data pengguna berhasil dihapus.',
+            'message' => 'Role deleted successfully.',
             'status' => true,
         ], Response::HTTP_OK);
     }

@@ -35,9 +35,13 @@ class UserController extends Controller
             $this->users = $this->users->where('name', 'LIKE', '%' . $request->search . '%')->orWhere('email', 'LIKE', '%' . $request->search . '%');
         }
 
+        $this->users = $this->users->paginate(
+            $request->length ?? self::DEFAULT_PAGE_LENGTH
+        )->appends(['search' => $request->search]);
+
         return response()->json([
             'success' => true,
-            'data' => $this->users->paginate($request->length ?? 5)->appends(['search' => $request->search]),
+            'data' => $this->users,
         ], Response::HTTP_OK);
     }
 
@@ -62,7 +66,7 @@ class UserController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data pengguna berhasil ditambahkan',
+            'message' => 'User created successfully.',
             'data' => $user,
         ], Response::HTTP_CREATED);
     }
@@ -81,7 +85,7 @@ class UserController extends Controller
             $user = $user->load($relations);
         }
 
-        return $user;
+        return response()->json($user, Response::HTTP_OK);
     }
 
     /**
@@ -106,9 +110,9 @@ class UserController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data pengguna berhasil diupdate',
+            'message' => 'User updated successfully.',
             'data' => $user,
-        ], Response::HTTP_CREATED);
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -128,7 +132,7 @@ class UserController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data pengguna berhasil dihapus.',
+            'message' => 'User deleted successfully.',
             'status' => true,
         ], Response::HTTP_OK);
     }
