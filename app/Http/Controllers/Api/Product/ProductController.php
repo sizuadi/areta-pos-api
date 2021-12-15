@@ -3,11 +3,22 @@
 namespace App\Http\Controllers\Api\Product;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductStoreRequest;
+use App\Http\Requests\ProductUpdateRequest;
 use App\Models\Product;
+use App\Services\FileUploadService;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class ProductController extends Controller
 {
+    protected $products;
+
+    public function __construct(Product $products)
+    {
+        $this->products = $products;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -15,19 +26,26 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $pageNumber = $request->page ? $request->page : 1 ; // set default
-        $pageLength = $request->length ? $request->length : 5 ; // set default
+        if ($request->has('relations')) {
+            $relations = explode(',', $request->relations);
 
-        $products = Product::when(request('search'), function($q) use ($request) {
-            $q->where('name', 'LIKE', "%$request->search%");
-        })
-        ->paginate($pageLength, ['*'], 'page', $pageNumber);
+            $this->products = $this->products->with($relations);
+        }
+
+        if ($request->has('search')) {
+            $this->products = $this->products->where('name', 'LIKE', '%' . $request->search . '%')
+                ->orWhereRelation('category', 'name', 'LIKE', '%' . $request->search . '%');
+        }
+
+        $this->products = !$request->has('no_paginate')
+            ? $this->products->paginate($request->length ?? self::DEFAULT_PAGE_LENGTH)->appends(['search' => $request->search])
+            : $this->products->get();
 
         return response()->json([
             'success' => true,
             'message' => 'product list',
-            'data' => $products
-        ], 200);
+            'data' => $this->products,
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -36,30 +54,31 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Product $product)
+    public function store(ProductStoreRequest $request)
     {
-        $product->name = $request->name;
-        $product->description = $request->description;
-        $product->created_by = $request->created_by;
+        try {
+            $product = $this->products->create($request->validated());
 
-        if ($request->file('image')) {
-            // upload image
-            $name = $request->file('image')->getClientOriginalName();
-            $dir = $request->file('image')->move('product', $name);
-            
-            $product->image = $name;
+            $product->category()->attach(
+                is_array($request->category)
+                ? $request->category
+                : explode(',', $request->category)
+            );
+
+            if ($request->file('image')) {
+                $this->upload($product, $request->file('image'));
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => $th->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $product->save();
-
-        // attach category
-        $product->category()->attach($request->category);
 
         return response()->json([
             'success' => true,
-            'message' => 'product created',
+            'message' => 'Product created successfully.',
             'data' => $product
-        ], 200);
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -68,13 +87,19 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Product $product)
+    public function show(Request $request, Product $product)
     {
+        if ($request->has('relations')) {
+            $relations = explode(',', $request->relations);
+
+            $product = $product->load($relations);
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'product show',
             'data' => $product
-        ], 200);
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -84,20 +109,31 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(ProductUpdateRequest $request, Product $product)
     {
-        $product->name = $request->name;
-        $product->description = $request->description;
-        $product->image = $request->image;
-        $product->created_by = $request->created_by;
+        try {
+            $product->update($request->validated());
 
-        $product->save();
+            $product->category()->sync(
+                is_array($request->category)
+                ? $request->category
+                : explode(',', $request->category)
+            );
+
+            if ($request->file('image')) {
+                $this->upload($product, $request->file('image'));
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => $th->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
 
         return response()->json([
             'success' => true,
-            'message' => 'product updated',
+            'message' => 'Product updated successfully.',
             'data' => $product
-        ], 200);
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -108,11 +144,45 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
+        $product->category()->detach();
         $product->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'product deleted'
-        ], 200);
+            'message' => 'Product deleted successfully.'
+        ], Response::HTTP_OK);
+    }
+
+    /**
+     * an Event to handle image upload.
+     *
+     * @param \App\Models\Product $product
+     * @param  mixed  $imageFile
+     * @return \App\Models\Product
+     */
+    private function upload(Product $product, $imageFile)
+    {
+        $uploadedFile = (new FileUploadService($imageFile, "products/$product->id/"))
+            ->upload()
+            ->resize(300, 300)
+            ->getFileName();
+
+        if ($product->image) {
+            $product->image()->update([
+                'path' => public_path("storage/products/$product->id"),
+                'file_name' => $uploadedFile,
+                'source' => asset("storage/products/$product->id/$uploadedFile"),
+            ]);
+
+            return $product;
+        }
+
+        $product->image()->create([
+            'path' => public_path("storage/products/$product->id"),
+            'file_name' => $uploadedFile,
+            'source' => asset("storage/products/$product->id/$uploadedFile"),
+        ]);
+
+        return $product;
     }
 }
